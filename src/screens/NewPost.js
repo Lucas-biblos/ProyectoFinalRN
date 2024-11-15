@@ -12,16 +12,21 @@ export class NewPost extends Component {
         };
     }
 
-
     handleSubmit = () => {
+
+        if (this.state.description === '') {
+            this.setState({ errorMsg: 'La descripción no puede estar vacía.' });
+            return;
+        }
+
         db.collection('posts').add({
-            owner: auth.currentUser.email,
+            owner: auth.currentUser.email ,
             description: this.state.description,
             createdAt: Date.now(),
         })
             .then(() => {
                 this.setState({ description: '', errorMsg: '' });
-                this.props.navigation.navigate('Home');
+                this.props.navigation.navigate('Profile');
             })
             .catch(e => this.setState({ errorMsg: e.message }));
     }
