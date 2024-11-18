@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth, db } from '../firebase/config';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 
 export class Profile extends Component {
@@ -11,10 +12,34 @@ export class Profile extends Component {
     this.state = {
       posts: [],
       loading: true,
+      userInfo: ''
     };
   }
-
   componentDidMount() {
+
+    db.collection('users')
+    .where('email', '==', auth.currentUser.email)
+      .onSnapshot(
+        (snapshot) => {
+          let userInfo = [];
+          snapshot.forEach((doc) => {
+            userInfo.push({
+              id: doc.id,
+              data: doc.data(),
+            });
+          });
+
+          this.setState({
+            userInfo: userInfo[0].data,
+            loading: false,
+          });
+        },
+        (error) => {
+          console.error('Error', error);
+        }
+      );
+
+
     db.collection('posts')
       .where('owner', '==', auth.currentUser.email)
       .onSnapshot(
@@ -33,7 +58,7 @@ export class Profile extends Component {
           });
         },
         (error) => {
-          console.error('Error al obtener los posts del usuario:', error);
+          console.error('Error ', error);
         }
       );
   }
@@ -45,7 +70,7 @@ export class Profile extends Component {
         console.log('Post eliminado');
       })
       .catch((error) => {
-        console.error('Error al eliminar el post:', error);
+        console.error('Error al eliminar el post', error);
       });
   };
 
@@ -59,41 +84,31 @@ export class Profile extends Component {
         console.error("Error al cerrar sesión: ", error);
       });
   };
-
-  Fecha = (timestamp) => {
-    const date = new Date(timestamp.seconds * 1000); 
-    return date.toLocaleDateString(); 
-  };
-
-
   render() {
-
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>{this.state.userInfo.UserName}</Text>
+        <Text style={styles.bio}>{this.state.userInfo.bio}</Text>
         <Text style={styles.subTitle}>Tus Posts</Text>
 
         {this.state.loading ? (
-          <Text>Cargando posts...</Text>
+          <Text style={styles.loadingText}>Cargando posts...</Text>
         ) : this.state.posts.length === 0 ? (
-          <Text>No tienes posts publicados.</Text>
+          <Text style={styles.noPostsText}>No tienes posts publicados.</Text>
         ) : (
           <FlatList
             data={this.state.posts}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View style={styles.postContainer}>
-
                 <Text style={styles.postOwner}>{item.data.owner}</Text>
-                <Text style={styles.postTitle}>{item.data.description}</Text>
-                <Text style={styles.postDate}>{item.data.createdAt}</Text>
+                <Text style={styles.postDescription}>{item.data.description}</Text>
 
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => this.deletePost(item.id)}>
                   <Icon name="trash" size={20} color="brown" />
                 </TouchableOpacity>
-                
               </View>
             )}
           />
@@ -110,54 +125,75 @@ export class Profile extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 20,
+    backgroundColor: '#15202B',
+    padding: 15,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
+    color: '#E1E8ED',
     textAlign: 'center',
+    marginBottom: 15,
+  },
+  bio: {
+    fontSize: 18,
+    color: '#AAB8C2',
+    textAlign: 'center',
+    marginBottom: 30,
   },
   subTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginVertical: 20,
-    color: '#555',
+    color: '#E1E8ED',
+    marginBottom: 10,
   },
-  logoutButton: {
-    backgroundColor: '#FF6347',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 8,
-    alignSelf: 'center',
-    marginBottom: 20,
+  loadingText: {
+    color: '#E1E8ED',
+    textAlign: 'center',
   },
-  logoutText: {
-    color: '#fff',
-    fontSize: 18,
+  noPostsText: {
+    color: '#E1E8ED',
+    textAlign: 'center',
   },
   postContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#192734',
+    borderRadius: 10,
     padding: 15,
     marginBottom: 10,
-    borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 2,
   },
-  postTitle: {
+  postOwner: {
     fontSize: 16,
+    color: '#1DA1F2',
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  postDate: {
+  postDescription: {
     fontSize: 14,
-    color: '#888',
+    color: '#E1E8ED',
+    lineHeight: 20,
+  },
+  deleteButton: {
+    backgroundColor: 'transparent',
+    padding: 5,
+    marginTop: 10,
+  },
+  logoutButton: {
+    backgroundColor: '#FF6347',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+    marginTop: 30,
+    alignSelf: 'center',
+  },
+  logoutText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
-
 export default Profile;
