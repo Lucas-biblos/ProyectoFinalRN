@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } from 'react-native';
 import { db } from '../firebase/config';
+import { FontAwesome } from '@expo/vector-icons';
 
 export class Users extends Component {
   constructor(props) {
@@ -36,9 +37,9 @@ export class Users extends Component {
 
   handleSearch(value) {
     this.setState({
-      searchValue: value,  
-      filteredUsers: this.state.users.filter((user) => 
-        user.data.UserName.toLowerCase().includes(value.toLowerCase())  
+      searchValue: value,
+      filteredUsers: this.state.users.filter((user) =>
+        user.data.UserName.toLowerCase().includes(value.toLowerCase()) || user.data.email.toLowerCase().includes(value.toLowerCase())
       ),
     });
   }
@@ -53,21 +54,19 @@ export class Users extends Component {
   render() {
     return (
       <View style={styles.container}>
-      <Text style={styles.title}>Buscar</Text>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar..."
-          value={this.state.searchValue} 
-          onChangeText={(text) => this.handleSearch(text)} 
-        />
+        <Text style={styles.title}>Encuentra otros usuarios</Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Buscar..."
+            value={this.state.searchValue}
+            onChangeText={(text) => this.handleSearch(text)}/>
+
           <TouchableOpacity onPress={() => this.handleResetSearch()} style={styles.resetButton}>
-            <Text style={styles.resetButtonText}>Reset</Text>
+            <FontAwesome name="refresh" size={20} color="white" />
           </TouchableOpacity>
         </View>
-        {!this.state.loading && this.state.filteredUsers.length === 0 && ( 
-          <Text style={styles.noResultsText}>No se encontraron resultados</Text> 
-        )}
+        {!this.state.loading && this.state.filteredUsers.length === 0 && <Text style={styles.noResultsText}>No se encontraron resultados</Text>}
         {!this.state.loading && (
           <FlatList
             data={this.state.filteredUsers}
@@ -75,12 +74,13 @@ export class Users extends Component {
             renderItem={({ item }) => (
               <View style={styles.userContainer}>
                 <Text style={styles.username}>{item.data.UserName}</Text>
+                <Text style={styles.bio}>{item.data.email}</Text>
                 <Text style={styles.bio}>{item.data.bio}</Text>
               </View>
             )}
           />
         )}
-        {this.state.loading && <Text style={styles.loadingText}>Cargando usuarios...</Text>}
+         {this.state.loading && <Text style={styles.loadingText}>Cargando usuarios...</Text>}
       </View>
     );
   }
@@ -89,65 +89,75 @@ export class Users extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#15202B',
+    padding: 15,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+    color: '#E1E8ED',
+    textAlign: 'center',
+    marginBottom: 15,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
+    backgroundColor: '#192734',
+    borderRadius: 30,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
   },
   input: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-    backgroundColor: '#fff',
+    height: 40,
+    fontSize: 16,
+    color: '#E1E8ED',
+    borderWidth: 0,
+    borderRadius: 25,
+    paddingHorizontal: 10,
   },
   resetButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-  },
-  resetButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    backgroundColor: '#1DA1F2',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 25,
+    marginLeft: 10,
   },
   userContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: '#192734',
+    borderRadius: 10,
     padding: 15,
-    borderRadius: 5,
     marginBottom: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   username: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#1DA1F2',
+    marginBottom: 5,
   },
   bio: {
     fontSize: 14,
-    color: '#666',
+    color: '#AAB8C2',
+    marginBottom: 5,
   },
   loadingText: {
-    fontSize: 16,
-    color: '#999',
+    color: '#E1E8ED',
     textAlign: 'center',
-    marginTop: 20,
+  },
+  noResultsText: {
+    color: '#E1E8ED',
+    textAlign: 'center',
   },
 });
-
 export default Users;
