@@ -32,7 +32,6 @@ export class Home extends Component {
     });
   }
 
-
   render() {
     return (
       <View style={styles.container}>
@@ -44,6 +43,8 @@ export class Home extends Component {
               <View style={styles.postContainer}>
                 <Text style={styles.owner}>{item.data.owner}</Text>
                 <Text style={styles.description}>{item.data.description}</Text>
+                <Text>{item.data.likes.length}</Text>
+                 {/* <Text>también le gustó a {item.data.likes[0]}</Text> */}
               </View>
             )}
           />

@@ -41,7 +41,7 @@ export class Profile extends Component {
 
 
     db.collection('posts')
-      .where('owner', '==', auth.currentUser.email)
+      .where('owner', '==', auth.currentUser.email).orderBy('createdAt', 'desc')
       .onSnapshot(
         (snapshot) => {
           let userPosts = [];
@@ -89,7 +89,7 @@ export class Profile extends Component {
       <View style={styles.container}>
         <Text style={styles.title}>{this.state.userInfo.UserName}</Text>
         <Text style={styles.bio}>{this.state.userInfo.bio}</Text>
-        <Text style={styles.subTitle}>Tus Posts</Text>
+        <Text style={styles.subTitle}>Tus Posts ({this.state.posts.length})</Text>
 
         {this.state.loading ? (
           <Text style={styles.loadingText}>Cargando posts...</Text>
@@ -103,6 +103,7 @@ export class Profile extends Component {
               <View style={styles.postContainer}>
                 <Text style={styles.postOwner}>{item.data.owner}</Text>
                 <Text style={styles.postDescription}>{item.data.description}</Text>
+                <Text style={styles.postDescription}>Likes {item.data.likes.length}</Text>
 
                 <TouchableOpacity
                   style={styles.deleteButton}

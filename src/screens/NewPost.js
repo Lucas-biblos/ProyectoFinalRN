@@ -9,11 +9,11 @@ export class NewPost extends Component {
         this.state = {
             description: '',
             errorMsg: '',
+            likes:[]
         };
     }
 
     handleSubmit = () => {
-
         if (this.state.description === '') {
             this.setState({ errorMsg: 'La descripción no puede estar vacía.' });
             return;
@@ -23,6 +23,7 @@ export class NewPost extends Component {
             owner: auth.currentUser.email ,
             description: this.state.description,
             createdAt: Date.now(),
+            likes:[]
         })
             .then(() => {
                 this.setState({ description: '', errorMsg: '' });
