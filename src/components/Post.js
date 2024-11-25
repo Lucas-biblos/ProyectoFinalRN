@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { auth, db } from '../firebase/config';
 import firebase from 'firebase/app';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Post extends Component {
   constructor(props) {
@@ -39,7 +40,12 @@ class Post extends Component {
         <Text style={styles.description}>{data.description}</Text>
         <Text style={styles.likes}>Likes: {data.likes.length}</Text>
         <TouchableOpacity onPress={isLiked ? this.unlikePost : this.likePost}>
-          <Text style={styles.likeButton}>{isLiked ? 'Unlike' : 'Like'}</Text>
+          <Icon
+            name="thumbs-up"
+            size={24}
+            color={isLiked ? 'gold' : '#AAB8C2'}
+            style={styles.likeIcon}
+          />
         </TouchableOpacity>
       </View>
     );
@@ -73,10 +79,9 @@ const styles = StyleSheet.create({
     color: '#AAB8C2',
     marginBottom: 5,
   },
-  likeButton: {
-    fontSize: 14,
-    color: '#1DA1F2',
-    fontWeight: 'bold',
+  likeIcon: {
+    alignSelf: 'flex-start',
+    marginTop: 5,
   },
 });
 
