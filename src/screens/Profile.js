@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth, db } from '../firebase/config';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-
 
 export class Profile extends Component {
   constructor(props) {
@@ -15,10 +13,10 @@ export class Profile extends Component {
       userInfo: ''
     };
   }
-  componentDidMount() {
 
+  componentDidMount() {
     db.collection('users')
-    .where('email', '==', auth.currentUser.email)
+      .where('email', '==', auth.currentUser.email)
       .onSnapshot(
         (snapshot) => {
           let userInfo = [];
@@ -28,20 +26,17 @@ export class Profile extends Component {
               data: doc.data(),
             });
           });
-
           this.setState({
             userInfo: userInfo[0].data,
             loading: false,
-          });
-        },
+          });},
         (error) => {
           console.error('Error', error);
         }
       );
 
-
     db.collection('posts')
-      .where('owner', '==', auth.currentUser.email).orderBy('createdAt', 'desc')
+      .where('owner', '==', auth.currentUser.email)
       .onSnapshot(
         (snapshot) => {
           let userPosts = [];
@@ -51,7 +46,7 @@ export class Profile extends Component {
               data: doc.data(),
             });
           });
-
+          userPosts.sort((a,b )=> b.data.createdAt - a.data.createdAt) 
           this.setState({
             posts: userPosts,
             loading: false,
@@ -84,13 +79,13 @@ export class Profile extends Component {
         console.error("Error al cerrar sesión: ", error);
       });
   };
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>{this.state.userInfo.UserName}</Text>
         <Text style={styles.bio}>{this.state.userInfo.bio}</Text>
         <Text style={styles.subTitle}>Tus Posts ({this.state.posts.length})</Text>
-
         {this.state.loading ? (
           <Text style={styles.loadingText}>Cargando posts...</Text>
         ) : this.state.posts.length === 0 ? (
@@ -103,18 +98,18 @@ export class Profile extends Component {
               <View style={styles.postContainer}>
                 <Text style={styles.postOwner}>{item.data.owner}</Text>
                 <Text style={styles.postDescription}>{item.data.description}</Text>
-                <Text style={styles.postDescription}>Likes {item.data.likes.length}</Text>
-
+                <View style={styles.likeContainer}>
+                  <Icon name="thumbs-up" size={24} color={'#AAB8C2'} style={styles.likeIcon}/>
+                  <Text style={styles.likeCount}>{item.data.likes.length}</Text>
+                </View>
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => this.deletePost(item.id)}>
                   <Icon name="trash" size={20} color="brown" />
                 </TouchableOpacity>
               </View>
-            )}
-          />
+            )}/>
         )}
-
         <TouchableOpacity style={styles.logoutButton} onPress={this.logout}>
           <Text style={styles.logoutText}>Cerrar sesión</Text>
         </TouchableOpacity>
@@ -196,5 +191,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  likeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  likeIcon: {
+    marginRight: 8,
+  },
+  likeCount: {
+    fontSize: 16,
+    color: '#E1E8ED',
+  },
 });
+
 export default Profile;
