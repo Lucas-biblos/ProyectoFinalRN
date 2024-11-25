@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { db, auth } from '../firebase/config';
+import firebase from 'firebase/app';
+
+
 
 
 export class Home extends Component {
@@ -11,6 +14,8 @@ export class Home extends Component {
       loading: true,
     };
   }
+
+
 
 
   componentDidMount() {
@@ -32,6 +37,27 @@ export class Home extends Component {
     });
   }
 
+
+  likePost = (postId) => {
+    db.collection('posts').doc(postId).update({
+      likes: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.email),
+    })
+      .catch((error) => console.log('Error al likear', error));
+  };
+
+
+  unlikePost = (postId) => {
+    db.collection('posts').doc(postId).update({
+      likes: firebase.firestore.FieldValue.arrayRemove(auth.currentUser.email),
+    })
+      .catch((error) => console.log('Error al deslikear', error));
+  };
+
+
+
+
+
+
   render() {
     return (
       <View style={styles.container}>
@@ -43,8 +69,14 @@ export class Home extends Component {
               <View style={styles.postContainer}>
                 <Text style={styles.owner}>{item.data.owner}</Text>
                 <Text style={styles.description}>{item.data.description}</Text>
-                <Text>{item.data.likes.length}</Text>
-                 {/* <Text>también le gustó a {item.data.likes[0]}</Text> */}
+                <Text style={styles.description}>Likes {item.data.likes.length}</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    item.data.likes.includes(auth.currentUser.email) ? this.unlikePost(item.id): this.likePost(item.id)}>
+                  <Text style={styles.likeButtonText}>
+                    {item.data.likes.includes(auth.currentUser.email) ? 'Unlike' : 'Like'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             )}
           />
@@ -53,6 +85,8 @@ export class Home extends Component {
     );
   }
 }
+
+
 
 
 const styles = StyleSheet.create({
@@ -83,6 +117,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
+
+
 
 
 export default Home;
