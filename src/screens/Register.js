@@ -23,9 +23,7 @@ export class Register extends Component {
     })
 }
   handleSubmit(email, pass, bio, UserName) {
-    console.log('UserName:', this.state.UserName);
-    console.log('Email:', this.state.email);
-    console.log('Password:', this.state.password);
+    
 
     auth.createUserWithEmailAndPassword(email, pass)
       .then(response => {
