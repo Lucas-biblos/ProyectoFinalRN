@@ -17,7 +17,6 @@ export class NewPost extends Component {
             this.setState({ errorMsg: 'La descripción no puede estar vacía.' });
             return;
         }
-
         db.collection('posts').add({
             owner: auth.currentUser.email,
             description: this.state.description,
@@ -30,7 +29,6 @@ export class NewPost extends Component {
             })
             .catch(e => this.setState({ errorMsg: e.message }));
     }
-
     render() {
         return (
             <View style={styles.container}>
@@ -49,7 +47,6 @@ export class NewPost extends Component {
                 <TouchableOpacity style={styles.submitButton} onPress={this.handleSubmit}>
                     <Text style={styles.submitButtonText}>Subir Post</Text>
                 </TouchableOpacity>
-
                 {this.state.errorMsg ? <Text style={styles.errorText}>{this.state.errorMsg}</Text> : null}
             </View>
         );

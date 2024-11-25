@@ -32,21 +32,17 @@ class Post extends Component {
 
   render() {
     const { data } = this.props;
-    const isLiked = data.likes.includes(auth.currentUser.email);
-
     return (
       <View style={styles.postContainer}>
         <Text style={styles.owner}>{data.owner}</Text>
         <Text style={styles.description}>{data.description}</Text>
-        <Text style={styles.likes}>Likes: {data.likes.length}</Text>
-        <TouchableOpacity onPress={isLiked ? this.unlikePost : this.likePost}>
-          <Icon
-            name="thumbs-up"
-            size={24}
-            color={isLiked ? 'gold' : '#AAB8C2'}
-            style={styles.likeIcon}
-          />
-        </TouchableOpacity>
+        <View style={styles.likesContainer}>
+          <TouchableOpacity onPress={data.likes.includes(auth.currentUser.email) ? this.unlikePost : this.likePost}>
+            <Icon name="thumbs-up" size={24} color={data.likes.includes(auth.currentUser.email) ? 'gold' : '#AAB8C2'}
+            style={styles.likeIcon}/>
+          </TouchableOpacity>
+          <Text style={styles.likes}>{data.likes.length}</Text>
+        </View>
       </View>
     );
   }
@@ -74,14 +70,18 @@ const styles = StyleSheet.create({
     color: '#E1E8ED',
     lineHeight: 20,
   },
+  likesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
   likes: {
     fontSize: 14,
     color: '#AAB8C2',
-    marginBottom: 5,
+    marginLeft: 5,
   },
   likeIcon: {
-    alignSelf: 'flex-start',
-    marginTop: 5,
+    marginRight: 5,
   },
 });
 
