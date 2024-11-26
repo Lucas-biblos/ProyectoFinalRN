@@ -24,7 +24,10 @@ export class Register extends Component {
 }
   handleSubmit(email, pass, bio, UserName) {
     
-
+    if (!UserName) {
+      this.setState({ errorMsg: 'Debes ingresar un nombre obligatorio' });
+      return;
+    }
     auth.createUserWithEmailAndPassword(email, pass)
       .then(response => {
         if (response) {

@@ -10,12 +10,14 @@ export class Login extends Component {
     super(props);
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      errorMsg: ''
     };
   }
 
 
   onSubmit = () => {
+
     auth.signInWithEmailAndPassword(this.state.email, this.state.password)
       .then((data) => {
         let user = data.user;
@@ -34,7 +36,7 @@ export class Login extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Formulario de Login</Text>
-       
+
         <TextInput
           style={styles.input}
           keyboardType='email-address'
@@ -59,7 +61,7 @@ export class Login extends Component {
         <TouchableOpacity style={styles.loginButton} onPress={() => this.onSubmit()}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
-
+        {this.state.errorMsg ? <Text>{this.state.errorMsg}</Text> : null}
 
         <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}>
           <Text style={styles.linkText}>Go to Register</Text>
